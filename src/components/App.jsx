@@ -13,11 +13,11 @@ class App extends Component {
   }
   
  formSubmitHandler = (query) => {
- const images = {
-   query
-      }
-
-  this.setState(({ pixabeyImgs}) => ({pixabeyImgs:[images, ...pixabeyImgs]}))
+//  const images = {
+//    query
+//       }
+this.setState({query})
+  // this.setState(({ pixabeyImgs}) => ({pixabeyImgs:[images, ...pixabeyImgs]}))
   }
 
 
@@ -39,8 +39,10 @@ class App extends Component {
  async searchImg() {
    const { query } = this.state;
    try {
-     const {data} = await fetchImages(query);
-    this.setState({pixabeyImgs: data.hits})
+     const { data } = await fetchImages(query);
+     console.log(data.hits)
+     this.setState({ pixabeyImgs: data.hits })
+    
    } catch (error) {
      
    }
