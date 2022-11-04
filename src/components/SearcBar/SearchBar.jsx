@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 
+
 class SearchBar extends Component {
   state = {
     query: '',
-
-  };
+};
     handleChange = e => {
         const { target } = e;
     this.setState({
-      query: target.value,
+      query: target.value.toLowerCase(),
     });
  
  
@@ -16,9 +16,12 @@ class SearchBar extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-
-    this.props.onSubmit(this.state);
-    this.setState({ query: '' });
+    if (this.state.query.trim() === '') {
+      alert('Please, enter query!');
+      return
+}
+    this.props.onSubmit(this.state.query);
+    this.setState({ query: ''});
     this.reset();
   };
 
@@ -27,7 +30,7 @@ class SearchBar extends Component {
   };
 
     render() {
-        const { query } = this.state;
+        const { query} = this.state;
     return (
       <header>
         <form onSubmit={this.handleSubmit}>

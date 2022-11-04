@@ -4,7 +4,7 @@ export const ImageGallery = ({ items}) => {
     return (
         <ul>
             {items.map(({ id, webformatURL, largeImageURL }) => {
-                return <ImageGalleryItem key={id}><a href={largeImageURL}><img src={webformatURL} alt=""></img></a></ImageGalleryItem>
+                return <ImageGalleryItem key={id} webformatURL={webformatURL} largeImageURL={largeImageURL}></ImageGalleryItem>
   })}
 </ul>
     )

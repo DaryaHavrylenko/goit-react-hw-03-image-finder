@@ -9,19 +9,15 @@ const IMAGE_KEY = "img";
 class App extends Component {
   state = {
     pixabeyImgs: [],
-   
+   query:''
   }
   
- formSubmitHandler = ({id, webformatURL, largeImageURL}) => {
+ formSubmitHandler = (query) => {
  const images = {
-        id ,
-        webformatURL ,
-        largeImageURL ,
+   query
       }
 
-  this.setState(({ pixabeyImgs }) => ({
-        pixabeyImgs: [images, ...pixabeyImgs],
-      }))
+  this.setState(({ pixabeyImgs}) => ({pixabeyImgs:[images, ...pixabeyImgs]}))
   }
 
 
@@ -53,13 +49,18 @@ class App extends Component {
 
   componentDidMount() {
     this.getPersistedImg();
-    this.searchImg();
+    // this.searchImg();
+    const params = new URLSearchParams(window.location.search);
+    this.setState({ query: params.get('query') });
   }
 
   componentDidUpdate(prevProps, prevState) {
     const { pixabeyImgs, query } = this.state;
 
     if (query !== prevState.query) {
+      const params = new URLSearchParams();
+      params.set('query', query);
+      window.history.replaceState(null, null, `&${params.toString()}`)
       this.searchImg();
     }
     if (pixabeyImgs === prevState.pixabeyImgs) {
@@ -75,7 +76,7 @@ class App extends Component {
     return (
       <>
         <SearchBar onSubmit={this.formSubmitHandler} ></SearchBar> 
-        <ImageGallery items={pixabeyImgs}></ImageGallery>
+        <ImageGallery items={pixabeyImgs} list={this.state.query}></ImageGallery>
 
       </>
     );
