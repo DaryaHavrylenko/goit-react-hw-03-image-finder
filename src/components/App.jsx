@@ -27,7 +27,7 @@ this.setState({query})
 
     try {
       persistedImg = JSON.parse(persistedSerializedImg)
-    } catch (erroe) {
+    } catch (error) {
       persistedImg = null;
     }
 
@@ -51,7 +51,7 @@ this.setState({query})
 
   componentDidMount() {
     this.getPersistedImg();
-    // this.searchImg();
+   
     const params = new URLSearchParams(window.location.search);
     this.setState({ query: params.get('query') });
   }
@@ -78,7 +78,7 @@ this.setState({query})
     return (
       <>
         <SearchBar onSubmit={this.formSubmitHandler} ></SearchBar> 
-        <ImageGallery items={pixabeyImgs} list={this.state.query}></ImageGallery>
+        <ImageGallery items={pixabeyImgs}></ImageGallery>
 
       </>
     );
