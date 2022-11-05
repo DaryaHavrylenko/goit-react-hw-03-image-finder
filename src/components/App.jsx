@@ -1,85 +1,68 @@
 import React, { Component } from 'react';
-
-
-import { fetchImages } from 'components/api/pixabeyApi';
+import { fetchImages } from 'helpers/pixabeyApi';
 import SearchBar from './SearcBar/SearchBar';
 import { ImageGallery } from './ImageGallery/ImageGallery';
+import { LoadMore } from './LoadMore/LoadMore';
+import { Loader } from './Loader/Loader';
+import { ToastContainer } from 'react-toastify';
+// import 'react-toastify/dist/ReactToastify.css';
 
-const IMAGE_KEY = "img";
 class App extends Component {
   state = {
     pixabeyImgs: [],
-   query:''
-  }
-  
- formSubmitHandler = (query) => {
-//  const images = {
-//    query
-//       }
-this.setState({query})
-  // this.setState(({ pixabeyImgs}) => ({pixabeyImgs:[images, ...pixabeyImgs]}))
-  }
+    query: '',
+    page: 1,
+    totalHits: 0,
+    isLoading: false,
+  };
 
+  formSubmitHandler = query => {
+    this.setState({ query, page: 1 });
+  };
+  handleLoadMore = () => {
+    this.setState(prevState => ({ page: prevState.page + 1 }));
+  };
 
-  getPersistedImg = () => {
-    const persistedSerializedImg = localStorage.getItem(IMAGE_KEY);
-    let persistedImg;
+  componentDidUpdate(_, prevState) {
+    const { pixabeyImgs, query, page } = this.state;
 
-    try {
-      persistedImg = JSON.parse(persistedSerializedImg)
-    } catch (error) {
-      persistedImg = null;
-    }
-
-    if (persistedImg && persistedImg.length > 0) {
-      this.setState({pixabeyImgs: persistedImg})
-    }
-  }
-  
- async searchImg() {
-   const { query } = this.state;
-   try {
-     const { data } = await fetchImages(query);
-     console.log(data.hits)
-     this.setState({ pixabeyImgs: data.hits })
-    
-   } catch (error) {
-     
-   }
-    
-}
-
-  componentDidMount() {
-    this.getPersistedImg();
-   
-    const params = new URLSearchParams(window.location.search);
-    this.setState({ query: params.get('query') });
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    const { pixabeyImgs, query } = this.state;
-
-    if (query !== prevState.query) {
-      const params = new URLSearchParams();
-      params.set('query', query);
-      window.history.replaceState(null, null, `&${params.toString()}`)
-      this.searchImg();
+    if (prevState.query !== query || prevState.page !== page) {
+      this.setState({ isLoading: true });
+      fetchImages(query, page)
+        .then(data => {
+          this.setState(prev => ({
+            pixabeyImgs:
+              page === 1 ? data.hits : [...prev.pixabeyImgs, ...data.hits],
+            totalHits:
+              page === 1
+                ? data.totalHits - data.hits.length
+                : data.totalHits - [...prev.pixabeyImgs, ...data.hits].length,
+          }));
+        })
+        .finally(() => {
+          this.setState({ isLoading: false });
+        });
     }
     if (pixabeyImgs === prevState.pixabeyImgs) {
       return;
     }
-    localStorage.setItem(IMAGE_KEY, JSON.stringify(pixabeyImgs));
-}
-
+    // localStorage.setItem(IMAGE_KEY, JSON.stringify(pixabeyImgs));
+  }
 
   render() {
-  const {pixabeyImgs} = this.state
-    
+    const { pixabeyImgs } = this.state;
+
     return (
       <>
-        <SearchBar onSubmit={this.formSubmitHandler} ></SearchBar> 
-        <ImageGallery items={pixabeyImgs}></ImageGallery>
-
+        <SearchBar onSubmit={this.formSubmitHandler} />
+        <ImageGallery items={pixabeyImgs} />
+        {!!this.state.totalHits &&
+          (!this.state.isLoading ? (
+            <LoadMore onLoadMore={this.handleLoadMore} />
+          ) : (
+            <Loader />
+          ))}
+        <ToastContainer />
       </>
     );
   }

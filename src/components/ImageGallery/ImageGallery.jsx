@@ -2,7 +2,7 @@ import { ImageGalleryItem } from './ImageGalleryItem/ImageGalleryItem';
 import styled from 'styled-components';
 
 const List = styled.ul`
-     display: grid;
+  display: grid;
   max-width: calc(100vw - 48px);
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   grid-gap: 16px;
@@ -12,14 +12,21 @@ const List = styled.ul`
   list-style: none;
   margin-left: auto;
   margin-right: auto;
-`
+`;
 
-export const ImageGallery = ({ items}) => {
-    return (
-        <List>
-            {items.map(({ id, webformatURL, largeImageURL }) => {
-                return <ImageGalleryItem key={id} webformatURL={webformatURL} largeImageURL={largeImageURL}></ImageGalleryItem>
-  })}
-</List>
-    )
-}
+export const ImageGallery = ({ items }) => {
+  return (
+    <List>
+      {items.map(({ id, tags, webformatURL, largeImageURL }) => {
+        return (
+          <ImageGalleryItem
+            key={id}
+            alt={tags}
+            webformatURL={webformatURL}
+            largeImageURL={largeImageURL}
+          ></ImageGalleryItem>
+        );
+      })}
+    </List>
+  );
+};
