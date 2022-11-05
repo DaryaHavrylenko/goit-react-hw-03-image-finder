@@ -1,4 +1,5 @@
 import { ImageGalleryItem } from './ImageGalleryItem/ImageGalleryItem';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 const List = styled.ul`
@@ -29,4 +30,7 @@ export const ImageGallery = ({ items }) => {
       })}
     </List>
   );
+};
+ImageGallery.propTypes = {
+  items: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
