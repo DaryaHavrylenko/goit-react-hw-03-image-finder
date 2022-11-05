@@ -5,7 +5,8 @@ import { ImageGallery } from './ImageGallery/ImageGallery';
 import { LoadMore } from './LoadMore/LoadMore';
 import { Loader } from './Loader/Loader';
 import { ToastContainer } from 'react-toastify';
-// import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 class App extends Component {
   state = {
@@ -33,11 +34,17 @@ class App extends Component {
           this.setState(prev => ({
             pixabeyImgs:
               page === 1 ? data.hits : [...prev.pixabeyImgs, ...data.hits],
+
             totalHits:
               page === 1
                 ? data.totalHits - data.hits.length
                 : data.totalHits - [...prev.pixabeyImgs, ...data.hits].length,
           }));
+
+          if (data.totalHits === 0) {
+            this.notify();
+            return;
+          }
         })
         .finally(() => {
           this.setState({ isLoading: false });
@@ -46,9 +53,14 @@ class App extends Component {
     if (pixabeyImgs === prevState.pixabeyImgs) {
       return;
     }
+
     // localStorage.setItem(IMAGE_KEY, JSON.stringify(pixabeyImgs));
   }
-
+  notify = () => {
+    toast.info('There are no results for your search', {
+      position: toast.POSITION.TOP_RIGHT,
+    });
+  };
   render() {
     const { pixabeyImgs } = this.state;
 
